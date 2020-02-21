@@ -13,6 +13,11 @@
 <body>
 <div id="app" class="{{ route_class() }}-page">
     @include('layouts._header')
+    @if (session('index_info'))
+        <div class="alert alert-success" role="alert">
+            {{session('index_info') }}
+        </div>
+    @endif
     <div class="container">
         @yield('content')
     </div>
