@@ -36,6 +36,46 @@ class UserAddressesController extends Controller
             ])
         );
 
+        session()->flash('index_info','新增收货地址成功！');
         return redirect()->route('user_addresses.index');
+    }
+
+    public function edit(UserAddress $address)
+    {
+        $this->authorize('own', $address);
+
+        return view('user_addresses.create_and_edit',[
+            'address' => $address
+        ]);
+    }
+
+    public function update(UserAddress $address,UserAddressesRequest $request)
+    {
+        $this->authorize('own', $address);
+
+        $address->update($request->only([
+                'province',
+                'city',
+                'district',
+                'address',
+                'zip',
+                'contact_name',
+                'contact_phone'
+            ])
+        );
+
+        session()->flash('index_info','修改收货地址成功~');
+        return redirect()->route('user_addresses.index');
+    }
+
+    public function destroy(UserAddress $address)
+    {
+        $this->authorize('own', $address);
+
+        $address->delete();
+
+        session()->flash('index_alert','收货地址成功删除~');
+//        return redirect(route('user_addresses.index'));
+        return [];
     }
 }

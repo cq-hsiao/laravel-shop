@@ -13,17 +13,26 @@
 <body>
 <div id="app" class="{{ route_class() }}-page">
     @include('layouts._header')
-    @if (session('index_info'))
-        <div class="alert alert-success" role="alert">
-            {{session('index_info') }}
-        </div>
-    @endif
     <div class="container">
+
+        @if (session('index_info'))
+            <div class="alert alert-success" role="alert">
+                {{session('index_info') }}
+            </div>
+        @endif
+            @if (session('index_alert'))
+                <div class="alert alert-danger" role="alert">
+                    {{session('index_alert') }}
+                </div>
+            @endif
         @yield('content')
     </div>
     @include('layouts._footer')
 </div>
 <!-- JS 脚本 -->
 <script src="{{ mix('js/app.js') }}"></script>
+
+@yield('scriptsAfterJs')
+
 </body>
 </html>
