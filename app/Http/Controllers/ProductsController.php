@@ -83,12 +83,12 @@ class ProductsController extends Controller
         $user = $request->user();
 
         if ($user->favoriteProducts()->find($product->id)) {
-            return [];
+            return ['status'=>2];
         }
 
         $user->favoriteProducts()->attach($product);
 
-        return [];
+        return ['status'=>1];
     }
 
     public function disfavor(Product $product, Request $request)
