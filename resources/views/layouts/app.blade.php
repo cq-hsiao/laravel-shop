@@ -33,6 +33,6 @@
 <script src="{{ mix('js/app.js') }}"></script>
 
 @yield('scriptsAfterJs')
-
+@yield('cssForPage')
 </body>
 </html>

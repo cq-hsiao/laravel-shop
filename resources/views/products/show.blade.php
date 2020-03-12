@@ -68,6 +68,19 @@
     </div>
 @endsection
 
+@section('cssForPage')
+    <style type="text/css">
+        .swal-text {
+            background-color: #FEFAE3;
+            padding: 17px;
+            border: 1px solid #F0E1A1;
+            display: block;
+            margin: 22px;
+            text-align: center;
+            color: #61534e;
+        }
+    </style>
+@endsection
 @section('scriptsAfterJs')
     <script>
         $(document).ready(function () {
@@ -144,7 +157,19 @@
                     amount: $('.cart_amount input').val(),
                 }).then(function () {
                     // 请求成功执行此回调
-                    swal('加入购物车成功', '', 'success');
+                    // swal('加入购物车成功', '', 'success');
+                    swal({
+                        title: "加入购物车成功!",
+                        text: "是否前往购物车进行结算？",
+                        icon: "success",
+                        buttons: ['取消', '确定'],
+                        dangerMode: true,
+                    }).then(function(isConfirm) {
+                        if (!isConfirm) {
+                            return;
+                        }
+                        location.href = '{{ route('cart.index') }}';
+                    });
                 }, function (error) {
                     // 请求失败执行此回调
                     if (error.response.status === 401) {
