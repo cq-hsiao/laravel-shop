@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\InternalException;
 use App\Exceptions\InvalidRequestException;
 use App\Http\Requests\OrderRequest;
 use App\Jobs\CloseOrder;
@@ -9,7 +10,10 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\ProductSku;
 use App\Models\UserAddress;
+use App\Services\CartService;
+use App\Services\OrderService;
 use Carbon\Carbon;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -33,12 +37,40 @@ class OrdersController extends Controller
         return view('orders.index',['orders' => $orders]);
     }
 
-    public function store(OrderRequest $request)
+    public function show(Order $order,Request $request){
+
+        try{
+            $this->authorize('own', $order);
+        }catch (AuthorizationException $e){
+            throw new InvalidRequestException('抱歉，权限不足~');
+        }
+
+        // 延迟预加载，不同点在于 load() 是在已经查询出来的模型上调用，而 with() 则是在 ORM 查询构造器上调用。
+         return view('orders.show',['order' => $order->load('items.product','items.productSku')]);
+
+//         dd($order->with(['items.product','items.productSku'])->where('id',$order->id)->first());
+//        return view('orders.show',['order' => $order->with(['items.product','items.productSku'])->where('id',$order->id)->first()]);
+//        return view('orders.show',['order' => Order::query()->with(['items.product','items.productSku'])->where(['id'=>$order->id])->first()]);
+
+    }
+
+
+    public function store(OrderRequest $request, OrderService $orderService)
+    {
+        $user    = $request->user();
+        $address = UserAddress::find($request->input('address_id'));
+
+        return $orderService->store($user, $address, $request->input('remark'), $request->input('items'));
+    }
+
+
+
+    public function old_store(OrderRequest $request,CartService $cartService)
     {
         $user = $request->user();
 
         // 开启一个数据库事务
-        $order = DB::transaction(function () use ($user,$request){
+        $order = DB::transaction(function () use ($user,$request, $cartService){
 
             $address = UserAddress::query()->find($request->input('address_id'));
 
@@ -89,8 +121,10 @@ class OrdersController extends Controller
             $order->update(['total_amount' => $totalAmount]);
 
             // 将下单的商品从购物车中移除
-            $skuIds = collect($items)->pluck('sku_id');
-            $user->cartItems()->whereIn('product_sku_id', $skuIds)->delete();
+//            $skuIds = collect($items)->pluck('sku_id');
+//            $user->cartItems()->whereIn('product_sku_id', $skuIds)->delete();
+            $skuIds = collect($request->input('items'))->pluck('sku_id')->all();
+            $cartService->remove($skuIds);
 
             return $order;
         });
