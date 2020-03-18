@@ -175,7 +175,9 @@
                     if (error.response.status === 401) {
 
                         // http 状态码为 401 代表用户未登陆
-                        swal('请先登录', '', 'error');
+                        swal('请先登录', '', 'error').then(function(){
+                            location.href = '{{ route('login') }}';
+                        });
 
                     } else if (error.response.status === 422) {
 
