@@ -14,3 +14,4 @@ yarn-error.log
 /public/js
 /public/css
 .idea
+/resources/wechat_pay
