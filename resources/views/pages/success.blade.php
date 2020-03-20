@@ -11,3 +11,12 @@
         </div>
     </div>
 @endsection
+
+@section('cssForPage')
+    <style type="text/css">
+        .card{
+            margin-left: 25%;
+            width: 50%;
+        }
+    </style>
+@endsection

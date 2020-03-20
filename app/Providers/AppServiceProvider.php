@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 use Monolog\Logger;
 use Yansongda\Pay\Pay;
@@ -18,7 +20,7 @@ class AppServiceProvider extends ServiceProvider
         // 往服务容器中注入一个名为 alipay 的单例对象
         $this->app->singleton('alipay',function(){
             $config = config('pay.alipay');
-            $config['notify_url'] = 'http://requestbin.net/r/11cpfjk1';
+            $config['notify_url'] = 'http://requestbin.net/r/srp8mwsr';
             $config['return_url'] = route('payment.alipay.return');
             // 判断当前项目运行环境是否为线上环境
             if(app()->environment() !== 'production'){
@@ -34,7 +36,7 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->singleton('wechat_pay', function () {
             $config = config('pay.wechat');
-            $config['notify_url'] = 'http://requestbin.net/r/11cpfjk1';
+            $config['notify_url'] = 'http://requestbin.net/r/srp8mwsr';
             if (app()->environment() !== 'production') {
                 $config['log']['level'] = Logger::DEBUG;
             } else {
@@ -53,5 +55,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         //
+//        DB::listen(function ($query){
+//            Log::info('sql_list',[$query->sql]);
+//        });
     }
 }

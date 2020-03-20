@@ -95,6 +95,13 @@
                                     </form>
                                 </div>
                             @endif
+                            @if($order->paid_at)
+                                <div class="payment-buttons">
+                                    <a class="btn btn-success btn-sm" href="{{ route('orders.review.show', ['order' => $order->id]) }}">
+                                        {{ $order->reviewed ? '查看评价' : '评价' }}
+                                    </a>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>

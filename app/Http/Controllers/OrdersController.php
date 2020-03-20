@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\OrderReviewed;
 use App\Exceptions\InternalException;
 use App\Exceptions\InvalidRequestException;
 use App\Http\Requests\OrderRequest;
+use App\Http\Requests\SendReviewRequest;
 use App\Jobs\CloseOrder;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -15,7 +17,12 @@ use App\Services\OrderService;
 use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
+use Monolog\Logger;
+use phpDocumentor\Reflection\Types\Collection;
 
 class OrdersController extends Controller
 {
@@ -37,13 +44,18 @@ class OrdersController extends Controller
         return view('orders.index',['orders' => $orders]);
     }
 
+    /**
+     * @throws InvalidRequestException
+     */
     public function show(Order $order,Request $request){
 
-        try{
-            $this->authorize('own', $order);
-        }catch (AuthorizationException $e){
-            throw new InvalidRequestException('抱歉，权限不足~');
-        }
+//        try{
+//            $this->authorize('own', $order);
+//        }catch (AuthorizationException $e){
+//            throw new InvalidRequestException('抱歉，权限不足~');
+//        }
+
+        $this->ownHandelAllowed($order);
 
         // 延迟预加载，不同点在于 load() 是在已经查询出来的模型上调用，而 with() 则是在 ORM 查询构造器上调用。
          return view('orders.show',['order' => $order->load('items.product','items.productSku')]);
@@ -67,7 +79,8 @@ class OrdersController extends Controller
     public function received(Order $order,Request $request)
     {
         // 校验权限
-        $this->authorize('own',$order);
+//        $this->authorize('own',$order);
+        $this->ownHandelAllowed($order);
 
         // 判断订单的发货状态是否为已发货
         if($order->ship_status !== Order::SHIP_STATUS_DELIVERED){
@@ -84,7 +97,90 @@ class OrdersController extends Controller
         return $order;
     }
 
+    public function review(Order $order){
 
+        // 校验权限
+        $this->authorize('own',$order);
+
+        if(!$order->paid_at){
+            throw new InvalidRequestException('该订单未支付，不可评价');
+        }
+
+        // 使用 load 方法加载关联数据，避免 N + 1 性能问题
+        return view('orders.review',['order' => $order->load('items.product','items.productSku')]);
+    }
+
+    public function sendReview(Order $order,SendReviewRequest $request)
+    {
+        $this->ownHandelAllowed($order);
+
+        if(!$order->paid_at){
+            throw new InvalidRequestException('该订单未支付，不可评价');
+        }
+        // 判断是否已经评价
+        if ($order->reviewed) {
+            throw new InvalidRequestException('该订单已评价，无需重复提交');
+        }
+
+        $reviews = $request->input('reviews');
+
+
+//        $new_arr = [];
+//        array_map(function($val) use (&$new_arr){
+//            $new_arr[$val['id']] = $val;
+//        },$reviews);
+//        dd($new_arr);
+
+        $orderItems = $order->items()->findMany(collect($reviews)->pluck('id'));
+        $reviewArr = array_column($reviews,null,'id');
+
+
+
+        // 开启事务  1.避免N+1查询
+        DB::transaction(function () use ($reviewArr,$order,$orderItems) {
+            foreach ($orderItems as $item){
+                if($reviewArr[$item->id]) {
+                    $item->update([
+                        'rating' => $reviewArr[$item->id]['rating'],
+                        'review'      => $reviewArr[$item->id]['review'],
+                        'reviewed_at' => Carbon::now(),
+                    ]);
+                }
+            }
+            // 将订单标记为已评价
+            $order->update(['reviewed' => true]);
+            event(new OrderReviewed($order));
+        });
+
+
+
+        // 开启事务 2.存在N+1问题
+//        DB::transaction(function () use ($reviews, $order) {
+//            // 遍历用户提交的数据
+//            foreach ($reviews as $review) {
+//                $orderItem = $order->items()->find($review['id']);
+//                // 保存评分和评价
+//                $orderItem->update([
+//                    'rating'      => $review['rating'],
+//                    'review'      => $review['review'],
+//                    'reviewed_at' => Carbon::now(),
+//                ]);
+//            }
+//            // 将订单标记为已评价
+//            $order->update(['reviewed' => true]);
+//            event(new OrderReviewed($order));
+//        });
+
+        return redirect()->back();
+    }
+
+
+    private function ownHandelAllowed($order){
+        if(!Gate::allows('own', $order)){
+            throw new InvalidRequestException('抱歉，权限不足~');
+        }
+        return;
+    }
 
     public function old_store(OrderRequest $request,CartService $cartService)
     {
