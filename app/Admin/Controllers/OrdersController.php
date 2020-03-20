@@ -25,7 +25,7 @@ class OrdersController extends AdminController
      *
      * @var string
      */
-    protected $title = 'App\Models\Order';
+    protected $title = '订单';
 
     /**
      * Make a grid builder.
@@ -43,11 +43,14 @@ class OrdersController extends AdminController
         // 展示关联关系的字段时，使用 column 方法
         $grid->column('user.name', '买家');
         $grid->total_amount('总金额')->sortable();
-        $grid->closed('订单状态')->display(function($value) {
-            return $value ?' 已关闭 ': '';
-        });
+
         $grid->paid_at('支付时间')->display(function ($value){
-            return $value ?:' -- ';
+            if($this->closed){
+                $msg = ' 已关闭 ';
+            } else {
+                $msg = ' -- ';
+            }
+            return $value ?: $msg;
         })->sortable();
         $grid->ship_status('物流')->display(function($value) {
             return Order::$shipStatusMap[$value];
