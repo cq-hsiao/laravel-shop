@@ -149,5 +149,43 @@
                 });
             });
         });
+
+        $('#btn-refund-agree').click(function () {
+            swal({
+                title: '确认要将款项退还给用户？',
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: "确认",
+                cancelButtonText: "取消",
+                showLoaderOnConfirm: true,
+                allowOutsideClick: false,
+                preConfirm:function () {
+                    return $.ajax({
+                        url :   '{{route('admin.orders.handle_refund',['order'=>$order->id])}}',
+                        type:   'POST',
+                        data:   JSON.stringify({
+                            agree : true,
+                            _token: LA.token,
+                        }),
+                        contentType: 'application/json'
+                    });
+                }
+            }).then(function (res) {
+                // 如果用户点击了『取消』按钮，则不做任何操作
+                if (res.dismiss === 'cancel') {
+                    return;
+                }
+                swal({
+                    title: '操作成功',
+                    type: 'success'
+                }).then(function() {
+                    // 用户点击 swal 上的按钮时刷新页面
+                    location.reload();
+                });
+            },function (error) {
+                // console.log(error.responseJSON.msg);
+                swal('操作失败', error.responseJSON.msg, 'error');
+            });
+        });
     });
 </script>
