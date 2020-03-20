@@ -36,6 +36,11 @@ class Order extends Model
         'wechat' => '微信支付'
     ];
 
+    public static $refundInfoMap = [
+        'refund_reason' => '退款理由',
+        'refund_disagree_reason' => '拒绝退款理由'
+    ];
+
     protected $fillable = [
         'no',
         'address',
