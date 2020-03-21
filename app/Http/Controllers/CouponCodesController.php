@@ -36,13 +36,13 @@ class CouponCodesController extends Controller
 //        return $record;
 //    }
 
-    public function show($code)
+    public function show($code,Request $request)
     {
         if(!$record = CouponCode::query()->where('code',$code)->first()){
             throw new CouponCodeUnavailableException('优惠券不存在');
         }
 
-        $record->checkCouponAvailable();
+        $record->checkCouponAvailable($request->user());
 
         return $record;
     }
