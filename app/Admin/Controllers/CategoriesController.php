@@ -107,7 +107,7 @@ class CategoriesController extends AdminController
             $form->display('parent.name', '父类目');
         } else {
             // 定义一个名为『是否目录』的单选框
-            $form->radio('is_directory','是否目录')->options(['1' => '是','2' => '否'])->default('0')->rules('required');
+            $form->radio('is_directory','是否目录')->options(['1' => '是','0' => '否'])->default('0')->rules('required');
             // 定义一个名为父类目的下拉框
             $form->select('parent_id', '父类目')->ajax('/admin/api/categories');
         }
@@ -122,7 +122,8 @@ class CategoriesController extends AdminController
         // 用户输入的值通过 q 参数获取
         $search = $request->input('q');
         $res = Category::query()
-            ->where('is_directory',true) // 由于这里选择的是父类目，因此需要限定 is_directory 为 true
+            // 通过 is_directory 参数来控制
+            ->where('is_directory', boolval($request->input('is_directory', true)))
             ->where('name','like','%'.$search.'%')
             ->paginate();
         // 把查询出来的结果重新组装成 Laravel-Admin 需要的格式
