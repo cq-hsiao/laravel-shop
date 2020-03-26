@@ -37,6 +37,7 @@ class CategoryService
             });
     }
 
+    // 当 Eloquent 模型触发 saved 和 deleted 事件,会触发监听器清除类目树缓存数据  \app\Observers\CategoryObserver.php
     public function getCacheCategoryTree()
     {
         if(!$categoryCache = Redis::get(self::categoryTree_key)){
