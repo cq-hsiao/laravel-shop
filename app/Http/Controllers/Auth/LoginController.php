@@ -35,6 +35,24 @@ class LoginController extends Controller
      */
     public function __construct()
     {
+        $redirectUrl = \request()->input('redirectUrl');
+        if($redirectUrl && url()->isValidUrl($redirectUrl)){
+            session()->put('redirectUrl',$redirectUrl);
+        }
+
         $this->middleware('guest')->except('logout');
+    }
+
+    // 登录后重定向
+    protected function redirectTo()
+    {
+        $redirectUrl = session()->get('redirectUrl');
+
+        if ($redirectUrl && url()->isValidUrl($redirectUrl)){
+            session()->forget('redirectUrl');
+            return $redirectUrl;
+        }
+
+        return $this->redirectTo;
     }
 }

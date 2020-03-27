@@ -90,4 +90,54 @@ class OrderService
 
         return $order;
     }
+
+    //  crowdfunding 方法用于实现众筹商品下单逻辑
+    public function crowdfunding(User $user,UserAddress $address,ProductSku $productSku,$amount)
+    {
+        // 开始事务
+        $order = DB::transaction(function () use ($user,$address,$productSku,$amount){
+            // 更新地址最后使用时间
+            $address->update(['last_used_at' => Carbon::now()]);
+
+            // 创建一个订单
+            $order = new Order([
+               'address' => [
+                   'address' => $address->full_address,
+                   'zip' => $address->zip,
+                   'contact_name'  => $address->contact_name,
+                   'contact_phone' => $address->contact_phone,
+               ],
+               'remark'       => '',
+               'total_amount' => $productSku->price * $amount,
+            ]);
+
+            // 订单关联到当前用户
+            $order->user()->associate($user);
+            // 写入数据库
+            $order->save();
+            // 创建一个新的订单项并与 SKU 关联
+            $item = $order->items()->make([
+                'amount' => $amount,
+                'price'  => $productSku->price,
+            ]);
+
+            $item->product()->associate($productSku->product_id);
+            $item->productSku()->associate($productSku);
+            $item->save();
+
+            // 扣减对应 SKU 库存
+            if($productSku->decreaseStock($amount) <= 0)
+            {
+                throw new InvalidRequestException('该商品库存不足');
+            }
+
+            return $order;
+        });
+
+        // 众筹结束时间减去当前时间得到剩余秒数
+        $crowdfundingTtl = $productSku->product->crowdfunding->end_at->getTimestamp() - time();
+        // 剩余秒数与默认订单关闭时间取较小值作为订单关闭时间
+        dispatch(new CloseOrder($order, min(config('app.order_ttl'), $crowdfundingTtl)));
+        return $order;
+    }
 }

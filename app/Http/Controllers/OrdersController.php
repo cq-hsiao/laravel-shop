@@ -7,10 +7,12 @@ use App\Exceptions\CouponCodeUnavailableException;
 use App\Exceptions\InternalException;
 use App\Exceptions\InvalidRequestException;
 use App\Http\Requests\ApplyRefundRequest;
+use App\Http\Requests\CrowdFundingOrderRequest;
 use App\Http\Requests\OrderRequest;
 use App\Http\Requests\SendReviewRequest;
 use App\Jobs\CloseOrder;
 use App\Models\CouponCode;
+use App\Models\CrowdfundingProduct;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\ProductSku;
@@ -217,6 +219,17 @@ class OrdersController extends Controller
             throw new InvalidRequestException('抱歉，权限不足~');
         }
         return;
+    }
+
+    // 众筹商品下单请求
+    public function crowdfunding(CrowdFundingOrderRequest $request,OrderService $orderService)
+    {
+        $user = $request->user();
+        $sku  = ProductSku::query()->find($request->input('sku_id'));
+        $address = UserAddress::query()->find($request->input('address_id'));
+        $amount = $request->input('amount');
+
+        return $orderService->crowdfunding($user,$address,$sku,$amount);
     }
 
     public function old_store(OrderRequest $request,CartService $cartService)
