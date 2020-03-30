@@ -29,7 +29,7 @@ class UpdateCrowdfundingProductProgress implements ShouldQueue
     {
         $order = $event->getOrder();
         // 如果订单类型不是众筹商品订单，无需处理
-        if($order->type != Order::TYPE_CROWDFUNDING){
+        if ($order->type !== Order::TYPE_CROWDFUNDING) {
             return;
         }
 
@@ -40,7 +40,7 @@ class UpdateCrowdfundingProductProgress implements ShouldQueue
             ->where('type',Order::TYPE_CROWDFUNDING)
             ->whereNotNull('paid_at')
             ->whereHas('items',function($query) use ($crowdfunding) {
-                $query->where('product_id',$crowdfunding->id);
+                $query->where('product_id',$crowdfunding->product_id);
             })
             ->first([
                 // 取出订单总金额,去重的支持用户数
