@@ -44,7 +44,7 @@ class FinishCrowdfunding extends Command
     {
         CrowdfundingProduct::query()
             // 众筹结束时间早于当前时间 众筹状态为众筹中
-            ->where(['end_at','<=',Carbon::now()],['status','=',CrowdfundingProduct::STATUS_FUNDING])
+            ->where([['end_at','<=',Carbon::now()],['status','=',CrowdfundingProduct::STATUS_FUNDING]])
             ->get()
             ->each(function (CrowdfundingProduct $crowdfunding){
                 // 如果众筹目标金额大于实际众筹金额,调用众筹失败逻辑,否则调用众筹成功逻辑
