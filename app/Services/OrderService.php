@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Exceptions\CouponCodeUnavailableException;
 use App\Exceptions\InternalException;
+use App\Jobs\RefundInstallmentOrder;
 use App\Models\CouponCode;
 use App\Models\User;
 use App\Models\UserAddress;
@@ -209,6 +210,15 @@ class OrderService
                     'refund_no' => $refundNo,
                     'refund_status' => Order::REFUND_STATUS_PROCESSING,
                 ]);
+                break;
+
+            case Order::PAYMENT_INSTALLMENT :
+                $order->update([
+                    'refund_no' => Order::getAvailableRefundNo(), // 生成退款订单号
+                    'refund_status' => Order::REFUND_STATUS_PROCESSING, // 将退款状态改为退款中
+                ]);
+                // 触发退款异步任务
+                dispatch(new RefundInstallmentOrder($order));
                 break;
 
             default:
