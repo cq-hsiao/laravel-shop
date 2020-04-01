@@ -16,6 +16,7 @@ class CrowdfundingProductsController extends CommonProductsController
         return Product::TYPE_CROWDFUNDING;
     }
 
+    
     /**
      * Title for current resource.
      *

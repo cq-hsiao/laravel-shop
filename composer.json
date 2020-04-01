@@ -19,7 +19,8 @@
         "moontoast/math": "^1.2",
         "overtrue/laravel-lang": "^3.0",
         "predis/predis": "^1.1",
-        "yansongda/pay": "^2.9"
+        "yansongda/pay": "^2.9",
+        "symfony/translation": "4.3.8"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.2",
