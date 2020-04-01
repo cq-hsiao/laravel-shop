@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.7.22, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.27, for Linux (x86_64)
 --
 -- Host: 127.0.0.1    Database: laravel-shop
 -- ------------------------------------------------------
--- Server version	5.7.22-0ubuntu18.04.1
+-- Server version	5.7.27-0ubuntu0.18.04.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -21,7 +21,7 @@
 
 LOCK TABLES `admin_menu` WRITE;
 /*!40000 ALTER TABLE `admin_menu` DISABLE KEYS */;
-INSERT INTO `admin_menu` VALUES (1,0,1,'首页','fa-bar-chart','/',NULL,NULL,'2020-02-26 09:01:25'),(2,0,7,'系统管理','fa-tasks',NULL,NULL,NULL,'2020-03-24 10:35:50'),(3,2,8,'管理员','fa-users','auth/users',NULL,NULL,'2020-03-24 10:35:50'),(4,2,9,'角色','fa-user','auth/roles',NULL,NULL,'2020-03-24 10:35:50'),(5,2,10,'权限','fa-ban','auth/permissions',NULL,NULL,'2020-03-24 10:35:50'),(6,2,11,'菜单','fa-bars','auth/menu',NULL,NULL,'2020-03-24 10:35:50'),(7,2,12,'操作日志','fa-history','auth/logs',NULL,NULL,'2020-03-24 10:35:50'),(8,0,2,'用户管理','fa-users','/users',NULL,'2020-02-26 09:37:53','2020-02-28 07:52:17'),(9,0,4,'商品管理','fa-cubes','/products',NULL,'2020-02-28 07:52:07','2020-03-24 10:36:12'),(10,0,5,'订单管理','fa-cny','/orders',NULL,'2020-03-18 17:34:06','2020-03-24 10:36:12'),(11,0,6,'优惠券管理','fa-ticket','/coupon_codes',NULL,'2020-03-20 17:38:54','2020-03-24 10:36:12'),(12,0,3,'类目管理','fa-bars','/categories',NULL,'2020-03-24 10:35:46','2020-03-24 10:36:12');
+INSERT INTO `admin_menu` VALUES (1,0,1,'首页','fa-bar-chart','/',NULL,NULL,'2020-02-26 09:01:25'),(2,0,9,'系统管理','fa-tasks',NULL,NULL,NULL,'2020-04-01 18:08:06'),(3,2,10,'管理员','fa-users','auth/users',NULL,NULL,'2020-04-01 18:08:06'),(4,2,11,'角色','fa-user','auth/roles',NULL,NULL,'2020-04-01 18:08:06'),(5,2,12,'权限','fa-ban','auth/permissions',NULL,NULL,'2020-04-01 18:08:06'),(6,2,13,'菜单','fa-bars','auth/menu',NULL,NULL,'2020-04-01 18:08:06'),(7,2,14,'操作日志','fa-history','auth/logs',NULL,NULL,'2020-04-01 18:08:06'),(8,0,2,'用户管理','fa-users','/users',NULL,'2020-02-26 09:37:53','2020-02-28 07:52:17'),(9,0,4,'商品管理','fa-cubes','/products',NULL,'2020-02-28 07:52:07','2020-03-24 10:36:12'),(10,0,7,'订单管理','fa-cny','/orders',NULL,'2020-03-18 17:34:06','2020-04-01 18:08:06'),(11,0,8,'优惠券管理','fa-ticket','/coupon_codes',NULL,'2020-03-20 17:38:54','2020-04-01 18:08:06'),(12,0,3,'类目管理','fa-bars','/categories',NULL,'2020-03-24 10:35:46','2020-03-24 10:36:12'),(13,9,5,'普通商品','fa-cube','/products',NULL,'2020-04-01 18:06:15','2020-04-01 18:08:05'),(14,9,6,'众筹商品','fa-flag-checkered','/crowdfunding_products',NULL,'2020-04-01 18:08:00','2020-04-01 18:08:06');
 /*!40000 ALTER TABLE `admin_menu` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -103,4 +103,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-03-24  2:56:40
+-- Dump completed on 2020-04-01 10:11:42
