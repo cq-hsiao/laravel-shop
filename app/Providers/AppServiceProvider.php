@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Models\Category;
+use App\Models\Product;
 use App\Observers\CategoryObserver;
+use App\Observers\ProductObserver;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
@@ -79,5 +81,6 @@ class AppServiceProvider extends ServiceProvider
 //        \Illuminate\Support\Facades\View::composer(['products.index', 'products.show'], \App\Http\ViewComposers\CategoryTreeComposer::class);
         \Illuminate\Support\Facades\View::composer(['products.*', 'orders.*','cart.*','user_addresses.*'], \App\Http\ViewComposers\CategoryTreeComposer::class);
         Category::observe(CategoryObserver::class);
+        Product::observe(ProductObserver::class);
     }
 }
