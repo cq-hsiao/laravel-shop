@@ -271,7 +271,7 @@
 
                         // http 状态码为 401 代表用户未登陆
                         swal('请先登录', '', 'error').then(function(){
-                            location.href = '{{ route('login') }}';
+                            location.href = '{{ route('login',['redirectUrl' => url()->current()]) }}';
                         });
 
                     } else if (error.response.status === 422) {
@@ -376,7 +376,7 @@
                                 swal({content: $(html)[0], icon: 'error'})
                             } else if (error.response.status === 401) {
                                 swal('请先登录', '', 'error').then(function(){
-                                    location.href = '{{ route('login') }}';
+                                    location.href = '{{ route('login',['redirectUrl' => url()->current()]) }}';
                                 });
                             } else if (error.response.status === 403) {
                                 swal(error.response.data.msg, '', 'error');
