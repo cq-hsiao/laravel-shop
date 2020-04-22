@@ -15,6 +15,7 @@ use App\Jobs\CloseOrder;
 use Carbon\Carbon;
 use Elasticsearch\Endpoints\Indices\Close;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 use Yansongda\Pay\Exceptions\GatewayException;
 
 class OrderService
@@ -266,6 +267,8 @@ class OrderService
             $item->product()->associate($sku->product_id);
             $item->productSku()->associate($sku);
             $item->save();
+
+            Redis::decr('seckill_sku_'.$sku->id);
 
             return $order;
         });

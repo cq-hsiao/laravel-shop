@@ -16,6 +16,9 @@ use Illuminate\Support\Facades\Auth;
 
 //Route::get('/','PagesController@root')->name('root');
 
+// 把秒杀接口放在路由的最开头，是因为 Laravel 匹配路由是从上往下匹配的，遇到第一个满足条件的路由就返回，所以放在最开头可以节省掉很多匹配路由的资源消耗。
+Route::post('seckill_orders', 'OrdersController@seckill')->name('seckill_orders.store');
+
 // 在之前的路由里加上一个 verify 参数
 Auth::routes(['verify' => true]);
 
@@ -64,7 +67,6 @@ Route::group(['middleware' => ['auth', 'verified']], function() {
     Route::get('installments/{installment}/alipay', 'InstallmentsController@payByAlipay')->name('installments.alipay');
     Route::get('installments/alipay/return', 'InstallmentsController@alipayReturn')->name('installments.alipay.return');
 
-    Route::post('seckill_orders', 'OrdersController@seckill')->name('seckill_orders.store');
 });
 
 Route::post('payment/alipay/notify','PaymentController@alipayNotify')->name('payment.alipay.notify');
