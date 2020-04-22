@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 use Monolog\Logger;
+use Psy\Util\Str;
 use Yansongda\Pay\Pay;
 use Elasticsearch\ClientBuilder as ESClientBuilder;
 
@@ -82,5 +83,11 @@ class AppServiceProvider extends ServiceProvider
         \Illuminate\Support\Facades\View::composer(['products.*', 'orders.*','cart.*','user_addresses.*'], \App\Http\ViewComposers\CategoryTreeComposer::class);
         Category::observe(CategoryObserver::class);
         Product::observe(ProductObserver::class);
+
+        if(app()->environment('local')) {
+            DB::listen(function ($query) {
+                Log::info(\Illuminate\Support\Str::replaceArray('?',$query->bindings,$query->sql));
+            });
+        }
     }
 }
